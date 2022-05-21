@@ -30,6 +30,3 @@ async def set_srv_name(name: str):
     s = SrvSettings.filter().first()
     s.name = name
     s.save()
-
-
-  

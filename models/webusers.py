@@ -18,10 +18,11 @@ class Webusers(BaseModel):
 
 
 def list_users(skip: int = 0, limit: int = 100):
-     return list(Webusers.select().offset(skip).limit(limit))
+    return list(Webusers.select().offset(skip).limit(limit))
+
 
 def get_user(username: str):
-     return Webusers.filter(Webusers.username == username).first()
+    return Webusers.filter(Webusers.username == username).first()
 
 
 def get_layout(user: int, path: str):
@@ -33,15 +34,17 @@ async def set_layout(user: int, layout: int, path: str):
     webuser = Webusers.filter(Webusers.id == user).first()
     webuser.layout = layout
     webuser.save()
-    
+
+
 def user_not_exist(username: str):
-    if int(Webusers.filter(Webusers.username == username).count())==0:
+    if int(Webusers.filter(Webusers.username == username).count()) == 0:
         return True
     else:
-        return False   
+        return False
+
 
 async def user_add(
-    username: str, fullname: str, password: str, u_status: int, group: int, tz: int, lang:int
+        username: str, fullname: str, password: str, u_status: int, group: int, tz: int, lang: int
 ):
     if user_not_exist(username):
         u = Webusers(
@@ -51,7 +54,7 @@ async def user_add(
             status=u_status,
             group=group,
             tz=tz,
-            lang = lang,
+            lang=lang,
             layout=3,
         )
         u.save()
@@ -59,14 +62,14 @@ async def user_add(
 
 
 async def user_edit(
-    id: int,
-    username: str,
-    fullname: str,
-    u_status: int,
-    group: int,
-    tz: int,
-    userstatus: int,
-    lang: int
+        id: int,
+        username: str,
+        fullname: str,
+        u_status: int,
+        group: int,
+        tz: int,
+        userstatus: int,
+        lang: int
 ):
     u = Webusers.filter(Webusers.id == id).first()
     if int(userstatus) == 1:
@@ -87,5 +90,3 @@ async def user_change_password(id: int, password: str):
 
 async def user_remove(id: int):
     return Webusers.delete().where(Webusers.id == id).execute()
-
-

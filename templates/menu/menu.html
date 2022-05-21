@@ -12,8 +12,33 @@
     <a class="nav-link {% if content.path == 'settings' %}active text-dark {% else %} text-light {% endif %}" href="/admin/settings/">{{ content.labels.settings }}</a>
   </li>
 <li class="nav-item">
-    <a class="nav-link {% if content.path == 'models' %}active text-dark {% else %} text-light {% endif %}" href="/admin/settings/">{{ content.labels.settings }}</a>
+    <a class="nav-link {% if content.path == 'models' %}active text-dark {% else %} text-light {% endif %}" href="/admin/models/">{{ content.labels.models }}</a>
 </li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'triggers' %}active text-dark {% else %} text-light {% endif %}" href="/admin/triggers/">{{ content.labels.triggers }}</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'jupyter_lab' %}active text-dark {% else %} text-light {% endif %}" href="/admin/jupyter_lab/">{{ content.labels.jupyter_lab }}</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'reports' %}active text-dark {% else %} text-light {% endif %}" href="/admin/reports/">{{ content.labels.reports }}</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'archives' %}active text-dark {% else %} text-light {% endif %}" href="/admin/archives/">{{ content.labels.archives }}</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'maps' %}active text-dark {% else %} text-light {% endif %}" href="/admin/maps/">{{ content.labels.maps }}</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link {% if content.path == 'about_us' %}active text-dark {% else %} text-light {% endif %}" href="/admin/about_us/">{{ content.labels.about_us }}</a>
+</li>
+
   <li class="nav-item">
     <a class="nav-link text-light" href="/docs/">API</a>
   </li>

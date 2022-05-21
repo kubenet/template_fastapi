@@ -24,10 +24,11 @@ async def group_edit(id: int, name: str):
 
 
 def group_not_exist(name: str):
-    if int(Groups.filter(Groups.name == name).count())==0:
+    if int(Groups.filter(Groups.name == name).count()) == 0:
         return True
     else:
-        return False    
+        return False
+
 
 async def group_add(name: str):
     if group_not_exist(name):
@@ -38,4 +39,3 @@ async def group_add(name: str):
 
 async def group_remove(id: int):
     return Groups.delete().where(Groups.id == id).execute()
-

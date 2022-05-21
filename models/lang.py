@@ -16,8 +16,8 @@ async def list_lang(skip: int = 0, limit: int = 100):
 
 
 async def get_lang(id: int):
-    l = Lang.filter(Lang.id == id).first()
-    if l == None:
+    language = Lang.filter(Lang.id == id).first()
+    if language is None:
         return 'en'
-    else:     
-        return l.code
+    else:
+        return language.code

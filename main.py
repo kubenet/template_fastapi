@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request, Depends, status, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse, ORJSONResponse
+from fastapi_login.exceptions import InvalidCredentialsException
 from jinja2 import PackageLoader, Environment
 from fastapi.templating import Jinja2Templates
 from fastapi_login import LoginManager
@@ -27,11 +28,12 @@ exceptions = {
     401: to_login,
 }
 
-app = FastAPI(title='AMP', description='APIs for AMP', version='0.1', exception_handlers=exceptions)
+app = FastAPI(title='Analytical Core INFOMATIX 2022', description='APIs for Analytical Core', version='0.1',
+              exception_handlers=exceptions)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 manager = LoginManager(secret, token_url='/auth/token', use_cookie=True, default_expiry=timedelta(hours=12))
-manager.cookie_name = 'amp'
+manager.cookie_name = 'Analytical_Core'
 
 
 @app.get("/", response_class=HTMLResponse, summary="Login page")
@@ -73,6 +75,19 @@ async def admin(request: Request, user=Depends(manager)):
         return RedirectResponse(url="/admin/dashboard/", status_code=status.HTTP_302_FOUND)
 
 
+@app.get("/admin/models/", response_class=HTMLResponse, summary="Models", tags=['Users'])
+async def models(request: Request, user=Depends(manager)):
+    content = await make_base_content(user)
+    content['show_layout'] = False
+    content['path'] = 'users'
+    content['groups'] = await list_groups(user.status, user.group)
+    content['users'] = list_users()
+    content['status'] = list_status(await get_lang(user.lang))
+    content['tz'] = await list_tz()
+    content['lang'] = await list_lang()
+    return templates.TemplateResponse("models.html", {"request": request, "content": content})
+
+
 @app.get("/admin/settings/", response_class=HTMLResponse, summary="Settings page", tags=['Settings'])
 async def admin(request: Request, user=Depends(manager)):
     content = await make_base_content(user)
@@ -101,13 +116,13 @@ async def admin(request: Request, user=Depends(manager)):
 
 
 @app.get('/setlayout/{layout}/{path}', response_class=HTMLResponse, summary="Set layout on page", tags=['View'])
-async def setlayout(layout: int, path: str, user=Depends(manager)):
+async def set_layout(layout: int, path: str, user=Depends(manager)):
     await set_layout(user, layout, path)
     return RedirectResponse(url="/admin/", status_code=status.HTTP_302_FOUND)
 
 
 @app.post('/group/', response_class=HTMLResponse, summary="Edit group", tags=['Groups'])
-async def groupedit(
+async def group_edit(
         id: int = Form('id'),
         type: str = Form('type'),
         path: str = Form('path'),
@@ -123,7 +138,7 @@ async def groupedit(
 
 
 @app.post('/group/remove/', response_class=HTMLResponse, summary="Remove group", tags=['Groups'])
-async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
+async def group_remove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
     if int(user.status) == 1:
         await group_remove(id)
     resp = RedirectResponse(url="/admin/" + str(path) + "/", status_code=status.HTTP_302_FOUND)
@@ -131,7 +146,7 @@ async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depen
 
 
 @app.post('/user/', response_class=HTMLResponse, summary="Edit user", tags=['Users'])
-async def useredit(
+async def user_edit(
         id: int = Form('id'),
         type: str = Form('type'),
         path: str = Form('path'),
@@ -153,7 +168,7 @@ async def useredit(
 
 
 @app.post('/user/remove/', response_class=HTMLResponse, summary="Delete user", tags=['Users'])
-async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
+async def group_remove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
     if int(user.status) == 1:
         await user_remove(id)
     resp = RedirectResponse(url="/admin/" + str(path) + "/", status_code=status.HTTP_302_FOUND)
@@ -161,8 +176,8 @@ async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depen
 
 
 @app.post('/user/change_password/', response_class=HTMLResponse, summary="Change user password", tags=['Users'])
-async def user_changepass(id: int = Form('id'), password: str = Form('password'), path: str = Form('path'),
-                          user=Depends(manager)):
+async def user_change_pass(id: int = Form('id'), password: str = Form('password'), path: str = Form('path'),
+                           user=Depends(manager)):
     if int(user.status) == 1:
         await user_change_password(id, sha256(password.encode('utf-8')).hexdigest())
     elif int(user.id) == id:
@@ -182,7 +197,7 @@ async def change_srvtz(typetz: str = Form('type'), tz: int = Form('tz'), path: s
 
 
 @app.post('/tools/srvname/', response_class=HTMLResponse, summary="Change server name", tags=['Tools'])
-async def change_srvname(srvname: str = Form('srvname'), path: str = Form('path'), user=Depends(manager)):
+async def change_srv_name(srvname: str = Form('srvname'), path: str = Form('path'), user=Depends(manager)):
     if int(user.status) == 1:
         await set_srv_name(srvname)
     resp = RedirectResponse(url="/admin/" + str(path) + "/", status_code=status.HTTP_302_FOUND)

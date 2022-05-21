@@ -13,5 +13,4 @@ class Vocabulary(BaseModel):
 
 
 async def get_labels(code: str):
-    return { l.name: l.value for l in Vocabulary.select().filter(Vocabulary.code==code) }
-
+    return {lng.name: lng.value for lng in Vocabulary.select().filter(Vocabulary.code == code)}
