@@ -3,3 +3,4 @@ __pycache__/
 req_full.txt
 .git/
 models/__pycache__/
+/env/
