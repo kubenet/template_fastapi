@@ -115,6 +115,33 @@ async def admin(request: Request, user=Depends(manager)):
     return templates.TemplateResponse("index.html", {"request": request, "content": content})
 
 
+@app.get('/triggers/', tags=['triggers'])
+async def triggers(request: Request, user=Depends(manager)):
+    content = await make_base_content(user)
+    content['show_layout'] = False
+    content['path'] = 'settings'
+    content['groupname'] = ''
+    gl = await list_groups(user.status, user.group)
+    for g in gl:
+        if int(g.id) == user.group:
+            content['groupname'] = g.name
+    content['userstatus'] = ''
+    sl = list_status(await get_lang(user.lang))
+    for s in sl:
+        if s['id'] == int(user.status):
+            content['userstatus'] = s['name']
+    content['user_status'] = user.status
+    content['usertz'] = await get_tz(user.tz)
+    if int(user.status) == 1:
+        content['srvtz'] = await get_srv_tz()
+        content['srvtz_name'] = await get_tz(content['srvtz'])
+    content['status'] = list_status(await get_lang(user.lang))
+    content['tz'] = await list_tz()
+    content['lang'] = await list_lang()
+    content['groups'] = await list_groups(user.status, user.group)
+    return templates.TemplateResponse("triggers.html", {"request": request, "content": content})
+
+
 @app.get('/setlayout/{layout}/{path}', response_class=HTMLResponse, summary="Set layout on page", tags=['View'])
 async def set_layout(layout: int, path: str, user=Depends(manager)):
     await set_layout(user, layout, path)
@@ -122,7 +149,7 @@ async def set_layout(layout: int, path: str, user=Depends(manager)):
 
 
 @app.post('/group/', response_class=HTMLResponse, summary="Edit group", tags=['Groups'])
-async def group_edit(
+async def groupedit(
         id: int = Form('id'),
         type: str = Form('type'),
         path: str = Form('path'),
@@ -138,9 +165,9 @@ async def group_edit(
 
 
 @app.post('/group/remove/', response_class=HTMLResponse, summary="Remove group", tags=['Groups'])
-async def group_remove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
+async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
     if int(user.status) == 1:
-        await group_remove(id)
+        await groupremove(id)
     resp = RedirectResponse(url="/admin/" + str(path) + "/", status_code=status.HTTP_302_FOUND)
     return resp
 
@@ -168,7 +195,7 @@ async def user_edit(
 
 
 @app.post('/user/remove/', response_class=HTMLResponse, summary="Delete user", tags=['Users'])
-async def group_remove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
+async def groupremove(id: int = Form('id'), path: str = Form('path'), user=Depends(manager)):
     if int(user.status) == 1:
         await user_remove(id)
     resp = RedirectResponse(url="/admin/" + str(path) + "/", status_code=status.HTTP_302_FOUND)
