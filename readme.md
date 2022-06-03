@@ -1,15 +1,15 @@
-<h1 align="center">AMP: is a fast admin dashboard template based on FastAPI</h1>
+<h1 align="center">Analytical Core Smart Public Transport</h1>
 <h3 align="center"><img src='./static/img/logo.png'></h3>
 
 
-<h1>Introduction</h1>
-    AMP: is a fast admin dashboard template based on FastAPI. The project uses its own database sqlite, which allows you to start using immediately after installation. Peewee is used as an ORM. The templates use bootstrap and C3(D3-based reusable chart library). The project implements authorization, user groups, localization and a number of settings, including separate setting of time zones for users.
+## Prototype analytical core
+---
+###### title: "Prototype analytical core"
+###### author: Osintsev Artem
+###### date: 19.05.2022
+---
+The analytical core processes incoming requests for data processing using predictive analysis methods. The result of the work is a JSON package with the results of the analysis. A packet with the result is sent to the client from which the data came.
 
-<h1>Screenshots</h1>
-<h3 align="center">Desktop view</h3>
-<img src='./static/img/desktop_view.jpg' width='100%'>
-<h3 align="center">Mobile view</h3>
-<h3 align="center"><img src='./static/img/mobile_view.jpg' width='25%'></h3>
 
 <h1>Demo</h1>
 <img src='./static/img/demo.gif' width='100%'>
